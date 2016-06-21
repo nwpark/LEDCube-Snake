@@ -3,13 +3,13 @@
 
 #include <Arduino.h>
 
-class Snake
+class Cell
 {
   public:
-    Snake(byte requiredX, byte requiredY, byte requiredZ);
-    ~Snake();
+    Cell(byte requiredX, byte requiredY, byte requiredZ);
+    ~Cell();
     byte xPos, yPos, zPos;
-    Snake *next;
+    Cell *next;
   private:
 };
 

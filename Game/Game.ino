@@ -1,8 +1,8 @@
-#include <Snake.h>
+#include <Cell.h>
 #include <CubeInterface.h>
 
-Snake *snake;
-Snake *food;
+Cell *snake;
+Cell *food;
 CubeInterface cube(1);
 
 const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
@@ -26,8 +26,8 @@ void loop()
 
 void moveSnake()
 {
-  Snake *head
-    = new Snake(snake->xPos, snake->yPos, snake->zPos);
+  Cell *head
+    = new Cell(snake->xPos, snake->yPos, snake->zPos);
 
   switch (snakeDirection)
   {
@@ -69,7 +69,7 @@ void placeFood()
     foodZ = random(0, 8);
   } while(cube.ledStatus[foodX][foodY][foodZ] != LOW);
   
-  food = new Snake(foodX, foodY, foodZ);
+  food = new Cell(foodX, foodY, foodZ);
 }
 
 void deathAnimation()
@@ -81,7 +81,7 @@ void deathAnimation()
   }
 } // deathAnimation
 
-boolean checkCrash(Snake *head)
+boolean checkCrash(Cell *head)
 {
   return (head->xPos < 0) || (head->xPos > 7)
          || (head->yPos < 0) || (head->yPos > 7)
@@ -90,7 +90,7 @@ boolean checkCrash(Snake *head)
 
 void moveTail()
 {
-  Snake *tail = snake;
+  Cell *tail = snake;
   while (tail->next->next != NULL)
   {
     tail = tail->next;
@@ -103,7 +103,7 @@ void updateCube()
 {
   cube.clearAll();
 
-  Snake *snakeBody = snake;
+  Cell *snakeBody = snake;
 
   while (snakeBody != NULL)
   {
@@ -118,12 +118,12 @@ void updateCube()
 void setInitialPosition()
 {
   snakeDirection = FORWARD;
-  snake = new Snake(0, 3, 0);
+  snake = new Cell(0, 3, 0);
 
-  Snake *body = snake;
+  Cell *body = snake;
   for (int i = 2; i >= 0; i--)
   {
-    body->next = new Snake(0, i, 0);
+    body->next = new Cell(0, i, 0);
     body = body->next;
   }
 } // setInitialPosition

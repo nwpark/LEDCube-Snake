@@ -18,18 +18,19 @@ void setup()
     { println("Failed to open serial port"); }
     
   acceptedKeys = new HashSet<Integer>();
-  acceptedKeys.add(87);
-  acceptedKeys.add(83);
-  acceptedKeys.add(65);
-  acceptedKeys.add(68);
-  acceptedKeys.add(33);
-  acceptedKeys.add(34);
+  acceptedKeys.add(87); // W
+  acceptedKeys.add(83); // S
+  acceptedKeys.add(65); // A
+  acceptedKeys.add(68); // D
+  acceptedKeys.add(33); // PgUp
+  acceptedKeys.add(34); // PgDn
 } // setup
 
 void draw()
 {
 } // draw
 
+// method is called every time keyboard input detected
 void keyPressed()
 {
   if(acceptedKeys.contains(keyCode))

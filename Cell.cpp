@@ -1,16 +1,16 @@
-#include "Snake.h"
+#include "Cell.h"
 
 byte xPos, yPos, zPos;
-Snake *next;
+Cell *next;
 
 // constructor
-Snake::Snake(byte requiredX, byte requiredY, byte requiredZ)
+Cell::Cell(byte requiredX, byte requiredY, byte requiredZ)
 {
   xPos = requiredX;
   yPos = requiredY;
   zPos = requiredZ;
   next = NULL;
-} // Snake
+} // Cell
 
 // destructor
-Snake::~Snake(){}
+Cell::~Cell(){}
