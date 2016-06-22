@@ -12,13 +12,13 @@ CubeInterface *cube;
 const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
            RIGHT = 68, UP = 33, DOWN = 34;
 
-int snakeSpeed = 30;
+int snakeSpeed = 5;
 byte noOfLives;
 byte maxLength = 8;
 byte snakeLength;
 byte snakeDirection;
 boolean gameRunning;
-boolean aiMode = true;
+boolean aiMode = false;
 
 void setup()
 {
@@ -40,45 +40,22 @@ void loop()
   }
   else if(aiMode)
   {
+    snakeDirection = Direction::smartDirectionChange(snake, food);
+    moveSnake();
     cube->wait((int)(1000/snakeSpeed));
-    smartMove();
   }
   else
     cube->writeCube();
 } // loop
 
-void smartMove()
-{
-  if(snake->xPos < food->xPos)
-    snakeDirection = RIGHT;
-  else if(snake->xPos > food->xPos)
-    snakeDirection = LEFT;
-  else if(snake->yPos < food->yPos)
-    snakeDirection = FORWARD;
-  else if(snake->yPos > food->yPos)
-    snakeDirection = BACKWARD;
-  else if(snake->zPos < food->zPos)
-    snakeDirection = UP;
-  else if(snake->zPos > food->zPos)
-    snakeDirection = DOWN;
-    
-  moveSnake();
-}
-
 void moveSnake()
 {
   Cell *newHead
     = new Cell(snake->xPos, snake->yPos, snake->zPos);
-
-  switch (snakeDirection)
-  {
-    case FORWARD: newHead->yPos++; break;
-    case BACKWARD: newHead->yPos--; break;
-    case LEFT: newHead->xPos--; break;
-    case RIGHT: newHead->xPos++; break;
-    case UP: newHead->zPos++; break;
-    case DOWN: newHead->zPos--; break;
-  } // switch
+  
+  newHead->xPos += Direction::xDelta(snakeDirection);
+  newHead->yPos += Direction::yDelta(snakeDirection);
+  newHead->zPos += Direction::zDelta(snakeDirection);
 
   if (!checkCrash(newHead))
   {
@@ -90,6 +67,7 @@ void moveSnake()
     {
       delete food;
       placeFood();
+      
       if(snakeLength < maxLength)
         snakeLength++;
       else
@@ -150,13 +128,13 @@ void placeFood()
   food = new Cell(foodX, foodY, foodZ);
 }
 
-boolean checkCrash(Cell *head)
+boolean checkCrash(Cell *newHead)
 {
-  byte x = head->xPos, y = head->yPos, z = head->zPos;
+  byte x = newHead->xPos, y = newHead->yPos, z = newHead->zPos;
   return (x < 0) || (x > 7)
             || (y < 0) || (y > 7)
-            || (z < 0) || (z > 7);
-            //|| cube->ledStatus[x][y][z] == HIGH;
+            || (z < 0) || (z > 7)
+            || snake->contains(newHead);
 }
 
 void moveTail()

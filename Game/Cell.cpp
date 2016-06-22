@@ -1,5 +1,4 @@
 #include "Cell.h"
-#include "CubeInterface.h"
 
 // Cell has 3 coordinates
 byte xPos, yPos, zPos;
@@ -26,6 +25,22 @@ Cell::~Cell()
   } // if
 } // ~Cell
 
+boolean Cell::contains(Cell *otherCell)
+{
+  if(next == NULL)
+    return this->equals(otherCell);
+  else if(!this->equals(otherCell))
+    return next->contains(otherCell);
+} // contains
+
+boolean Cell::contains(byte otherX, byte otherY, byte otherZ)
+{
+  if(next == NULL)
+    return this->equals(otherX, otherY, otherZ);
+  else if(!this->equals(otherX, otherY, otherZ))
+    return next->contains(otherX, otherY, otherZ);
+} // contains
+
 // delete the last element in the linked list
 void Cell::deleteLast()
 {
@@ -50,3 +65,14 @@ void Cell::updateCube(CubeInterface *cube)
   if(next != NULL)
     next->updateCube(cube);
 } // updateCube
+
+boolean Cell::equals(Cell *otherCell)
+{
+  return xPos == otherCell->xPos && yPos == otherCell->yPos
+               && zPos == otherCell->zPos;
+} // equals
+
+boolean Cell::equals(byte otherX, byte otherY, byte otherZ)
+{
+  return xPos == otherX && yPos == otherY && zPos == otherZ;
+} // equals
