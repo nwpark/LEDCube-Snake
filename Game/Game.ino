@@ -12,7 +12,7 @@ CubeInterface *cube;
 const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
            RIGHT = 68, UP = 33, DOWN = 34;
 
-int snakeSpeed = 50;
+int snakeSpeed = 30;
 byte noOfLives;
 byte maxLength = 8;
 byte snakeLength;
@@ -198,20 +198,7 @@ void serialEvent()
   // 80 = 'p'
   if(input == 80)
     gameRunning = !gameRunning;
-  else if(input != oppositeDirection(snakeDirection))
+  else if(input != Direction::opposite(snakeDirection))
     snakeDirection = input;
 } // serialEvent
-
-byte oppositeDirection(byte givenDirection)
-{
-  switch(givenDirection)
-  {
-    case FORWARD: return BACKWARD;
-    case BACKWARD: return FORWARD;
-    case LEFT: return RIGHT;
-    case RIGHT: return LEFT;
-    case UP: return DOWN;
-    case DOWN: return UP;
-  } // switch
-} // oppositeDirection
 
