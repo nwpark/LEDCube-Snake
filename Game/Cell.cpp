@@ -25,18 +25,24 @@ Cell::~Cell()
   } // if
 } // ~Cell
 
+// check whether this linked list contains a Cell with the same
+// coordinates as the given Cell recursively
 boolean Cell::contains(Cell *otherCell)
 {
   if(next == NULL)
     return this->equals(otherCell);
+  // recursively search for the given cell
   else if(!this->equals(otherCell))
     return next->contains(otherCell);
 } // contains
 
+// check whether this linked list contains a Cell with the same
+// coordinates as the given cell recursively
 boolean Cell::contains(byte otherX, byte otherY, byte otherZ)
 {
   if(next == NULL)
     return this->equals(otherX, otherY, otherZ);
+  // recursively search for the given cell
   else if(!this->equals(otherX, otherY, otherZ))
     return next->contains(otherX, otherY, otherZ);
 } // contains
@@ -66,12 +72,14 @@ void Cell::updateCube(CubeInterface *cube)
     next->updateCube(cube);
 } // updateCube
 
+// check if this Cell has the same coordinates as the given one
 boolean Cell::equals(Cell *otherCell)
 {
   return xPos == otherCell->xPos && yPos == otherCell->yPos
                && zPos == otherCell->zPos;
 } // equals
 
+// check if this Cell has the same coordinates as the given one
 boolean Cell::equals(byte otherX, byte otherY, byte otherZ)
 {
   return xPos == otherX && yPos == otherY && zPos == otherZ;

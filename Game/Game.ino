@@ -8,17 +8,16 @@ Cell *food;
 // object to control led cube
 CubeInterface *cube;
 
-// ascii hex values for input keys (w, a, s, d, pgup, pgdn)
-const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
-           RIGHT = 68, UP = 33, DOWN = 34;
-
-int snakeSpeed = 5;
-byte noOfLives;
+int snakeSpeed = 30;
 byte maxLength = 8;
+
+// these values set by setInitialState()
+byte noOfLives;
 byte snakeLength;
 byte snakeDirection;
+
 boolean gameRunning;
-boolean aiMode = false;
+boolean aiMode = true;
 
 void setup()
 {
@@ -35,11 +34,14 @@ void loop()
   updateCube();
   if(gameRunning)
   {
+    // move snake every x milliseconds
     cube->wait((int)(1000/snakeSpeed));
     moveSnake();
   }
   else if(aiMode)
   {
+    // move snake every x milliseconds and automatically change
+    // direction to move toward food
     snakeDirection = Direction::smartDirectionChange(snake, food);
     moveSnake();
     cube->wait((int)(1000/snakeSpeed));
@@ -48,6 +50,7 @@ void loop()
     cube->writeCube();
 } // loop
 
+// move snake forward by one cell
 void moveSnake()
 {
   Cell *newHead
@@ -57,6 +60,7 @@ void moveSnake()
   newHead->yPos += Direction::yDelta(snakeDirection);
   newHead->zPos += Direction::zDelta(snakeDirection);
 
+  // only move if new position doesnt cause snake to crash
   if (!checkCrash(newHead))
   {
     newHead->next = snake;
@@ -76,6 +80,7 @@ void moveSnake()
     else
       moveTail();
   } // if
+  // snake must have crashed at this point
   else
   {
     noOfLives--;
@@ -96,6 +101,7 @@ void moveSnake()
   } // else
 } // move
 
+// animation to end game, delete unused objects and restart game
 void endGame()
 {
   // death animation
@@ -115,9 +121,11 @@ void endGame()
   setInitialState();
 } // endGame
 
+// place food at random coordinates
 void placeFood()
 {
   byte foodX, foodY, foodZ;
+  // dont place food at an occupied location
   do
   {
     foodX = random(0, 8);
@@ -128,6 +136,7 @@ void placeFood()
   food = new Cell(foodX, foodY, foodZ);
 }
 
+// check if new position is occupied or out of bounds
 boolean checkCrash(Cell *newHead)
 {
   byte x = newHead->xPos, y = newHead->yPos, z = newHead->zPos;
@@ -137,11 +146,13 @@ boolean checkCrash(Cell *newHead)
             || snake->contains(newHead);
 }
 
+// delete the last segment of the snake
 void moveTail()
 {
   snake->deleteLast();
 }
 
+// update the cube display with current snake and food
 void updateCube()
 {
   cube->clearAll();
@@ -150,14 +161,15 @@ void updateCube()
   snake->updateCube(cube);
   // update the cube with the food position
   food->updateCube(cube);
-}
+} // updateCube
 
+// place snake and food in initial positions
 void setInitialState()
 {
   gameRunning = false;
-  noOfLives = 3;
+  noOfLives = 1;
   snakeLength = 4;
-  snakeDirection = FORWARD;
+  snakeDirection = Direction::FORWARD;
   
   snake = new Cell(0, 3, 0);
   Cell *snakeBody = snake;
