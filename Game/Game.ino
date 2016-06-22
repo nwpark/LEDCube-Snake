@@ -1,19 +1,24 @@
 #include "Cell.h"
 #include "CubeInterface.h"
+#include "Direction.h"
 
 // model the snake as a linked list
 Cell *snake;
 Cell *food;
+// object to control led cube
 CubeInterface *cube;
 
 // ascii hex values for input keys (w, a, s, d, pgup, pgdn)
 const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
            RIGHT = 68, UP = 33, DOWN = 34;
 
-int snakeSpeed;
+int snakeSpeed = 50;
 byte noOfLives;
+byte maxLength = 8;
+byte snakeLength;
 byte snakeDirection;
 boolean gameRunning;
+boolean aiMode = true;
 
 void setup()
 {
@@ -21,7 +26,6 @@ void setup()
 
   cube = new CubeInterface(1);
 
-  snakeSpeed = 10;
   setInitialState();
   updateCube();
 } // setup
@@ -34,9 +38,32 @@ void loop()
     cube->wait((int)(1000/snakeSpeed));
     moveSnake();
   }
+  else if(aiMode)
+  {
+    cube->wait((int)(1000/snakeSpeed));
+    smartMove();
+  }
   else
     cube->writeCube();
 } // loop
+
+void smartMove()
+{
+  if(snake->xPos < food->xPos)
+    snakeDirection = RIGHT;
+  else if(snake->xPos > food->xPos)
+    snakeDirection = LEFT;
+  else if(snake->yPos < food->yPos)
+    snakeDirection = FORWARD;
+  else if(snake->yPos > food->yPos)
+    snakeDirection = BACKWARD;
+  else if(snake->zPos < food->zPos)
+    snakeDirection = UP;
+  else if(snake->zPos > food->zPos)
+    snakeDirection = DOWN;
+    
+  moveSnake();
+}
 
 void moveSnake()
 {
@@ -63,6 +90,10 @@ void moveSnake()
     {
       delete food;
       placeFood();
+      if(snakeLength < maxLength)
+        snakeLength++;
+      else
+        moveTail();
     } // if
     else
       moveTail();
@@ -147,6 +178,7 @@ void setInitialState()
 {
   gameRunning = false;
   noOfLives = 3;
+  snakeLength = 4;
   snakeDirection = FORWARD;
   
   snake = new Cell(0, 3, 0);
