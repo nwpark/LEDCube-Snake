@@ -1,5 +1,5 @@
-#include <Cell.h>
-#include <CubeInterface.h>
+#include "Cell.h"
+#include "CubeInterface.h"
 
 Cell *snake;
 Cell *food;
@@ -8,12 +8,15 @@ CubeInterface cube(1);
 const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
            RIGHT = 68, UP = 33, DOWN = 34;
 
+int snakeSpeed;
 byte snakeDirection;
 boolean gameRunning;
 
 void setup()
 {
   Serial.begin(250000);
+
+  snakeSpeed = 10;
   setInitialState();
   updateCube();
 } // setup
@@ -23,7 +26,7 @@ void loop()
   updateCube();
   if(gameRunning)
   {
-    cube.wait(1000);
+    cube.wait((int)(10000/snakeSpeed));
     moveSnake();
   }
   else
@@ -62,15 +65,15 @@ void moveSnake()
   else
   {
     delete newHead;
-
+    
     // crash animation
     for(int i=0; i < 5; i++)
     {
       delay(200);
       cube.wait(400);
-    }
+    } // for
     endGame();
-  }
+  } // else
 } // move
 
 void endGame()
@@ -88,6 +91,7 @@ void endGame()
   } // for
 
   delete food;
+  delete snake;
   setInitialState();
 } // endGame
 
@@ -113,13 +117,7 @@ boolean checkCrash(Cell *head)
 
 void moveTail()
 {
-  Cell *tail = snake;
-  while (tail->next->next != NULL)
-  {
-    tail = tail->next;
-  }
-  delete tail->next;
-  tail->next = NULL;
+  snake->deleteLast();
 }
 
 void updateCube()
@@ -133,6 +131,7 @@ void updateCube()
                snakeBody->zPos);
     snakeBody = snakeBody->next;
   }
+  //snake->updateCube(cube);
 
   cube.light(food->xPos, food->yPos, food->zPos);
 }
