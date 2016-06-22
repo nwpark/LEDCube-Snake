@@ -11,6 +11,7 @@ const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
            RIGHT = 68, UP = 33, DOWN = 34;
 
 int snakeSpeed;
+byte noOfLives;
 byte snakeDirection;
 boolean gameRunning;
 
@@ -30,7 +31,7 @@ void loop()
   updateCube();
   if(gameRunning)
   {
-    cube->wait((int)(10000/snakeSpeed));
+    cube->wait((int)(1000/snakeSpeed));
     moveSnake();
   }
   else
@@ -68,15 +69,21 @@ void moveSnake()
   } // if
   else
   {
+    noOfLives--;
     delete newHead;
     
     // crash animation
-    for(int i=0; i < 5; i++)
+    for(int i=0; i < 4; i++)
     {
-      delay(200);
-      cube->wait(400);
+      //delay(200);
+      cube->clearAll();
+      cube->wait(150);
+      updateCube();
+      cube->wait(150);
     } // for
-    endGame();
+
+    if(noOfLives == 0)
+      endGame();
   } // else
 } // move
 
@@ -139,6 +146,7 @@ void updateCube()
 void setInitialState()
 {
   gameRunning = false;
+  noOfLives = 3;
   snakeDirection = FORWARD;
   
   snake = new Cell(0, 3, 0);

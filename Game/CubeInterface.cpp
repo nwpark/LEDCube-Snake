@@ -150,7 +150,7 @@ void CubeInterface::writeCube()
 
 // allow for delays in the code by updating the cube every 10 microseconds
 // rather than completely pausing the program.
-void CubeInterface::wait(byte t)
+void CubeInterface::wait(int t)
 {
   while(t > 0)
   {
