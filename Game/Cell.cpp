@@ -18,6 +18,7 @@ Cell::Cell(byte requiredX, byte requiredY, byte requiredZ)
 // destructor
 Cell::~Cell()
 {
+  // recursively delete all Cells linked to this one
   if(next != NULL)
   {
     delete next;
@@ -28,6 +29,8 @@ Cell::~Cell()
 // delete the last element in the linked list
 void Cell::deleteLast()
 {
+  // recursively search for the last Cell in the list
+  // then delete it
   if(next->next == NULL)
   {
     delete next;
@@ -37,9 +40,13 @@ void Cell::deleteLast()
     next->deleteLast();
 } // deleteLast
 
-void Cell::updateCube(CubeInterface cube)
+// update the cube to light the led at coordinates given by each
+// Cell in the linked list
+void Cell::updateCube(CubeInterface *cube)
 {
-  cube.light(xPos, yPos, zPos);
-//  if(next != NULL)
-//    next->updateCube(cube);
-}
+  // update the cube with this position then recursively update
+  // the cube with the next Cell
+  cube->light(xPos, yPos, zPos);
+  if(next != NULL)
+    next->updateCube(cube);
+} // updateCube
