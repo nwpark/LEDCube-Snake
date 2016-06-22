@@ -31,6 +31,7 @@ CubeInterface::CubeInterface(byte requiredDelay)
 {
   cubeDelay = requiredDelay;
 
+  // initialize all leds to be off
   for(byte x = 0; x < 8; x++)
     for(byte y = 0; y < 8; y++)
       for(byte z = 0; z < 8; z++)

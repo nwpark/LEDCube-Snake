@@ -12,7 +12,7 @@ class Cell
     Cell(byte requiredX, byte requiredY, byte requiredZ);
     ~Cell();
     void deleteLast();
-    void updateCube(CubeInterface cube);
+    void updateCube(CubeInterface *cube);
   private:
 };
 

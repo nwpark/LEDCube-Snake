@@ -1,10 +1,12 @@
 #include "Cell.h"
 #include "CubeInterface.h"
 
+// model the snake as a linked list
 Cell *snake;
 Cell *food;
-CubeInterface cube(1);
+CubeInterface *cube;
 
+// ascii hex values for input keys (w, a, s, d, pgup, pgdn)
 const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
            RIGHT = 68, UP = 33, DOWN = 34;
 
@@ -16,6 +18,8 @@ void setup()
 {
   Serial.begin(250000);
 
+  cube = new CubeInterface(1);
+
   snakeSpeed = 10;
   setInitialState();
   updateCube();
@@ -26,11 +30,11 @@ void loop()
   updateCube();
   if(gameRunning)
   {
-    cube.wait((int)(10000/snakeSpeed));
+    cube->wait((int)(10000/snakeSpeed));
     moveSnake();
   }
   else
-    cube.writeCube();
+    cube->writeCube();
 } // loop
 
 void moveSnake()
@@ -54,7 +58,7 @@ void moveSnake()
     snake = newHead;
 
     if(snake->xPos == food->xPos && snake->yPos == food->yPos
-           && snake->zPos == food ->zPos)
+          && snake->zPos == food ->zPos)
     {
       delete food;
       placeFood();
@@ -70,7 +74,7 @@ void moveSnake()
     for(int i=0; i < 5; i++)
     {
       delay(200);
-      cube.wait(400);
+      cube->wait(400);
     } // for
     endGame();
   } // else
@@ -81,13 +85,13 @@ void endGame()
   // death animation
   for(int i=0; i < 8; i++)
   {
-    cube.lightLayer(i);
-    cube.wait(30);
+    cube->lightLayer(i);
+    cube->wait(30);
   } // for
   for(int i=7; i >= 0; i--)
   {
-    cube.clearLayer(i);
-    cube.wait(30);
+    cube->clearLayer(i);
+    cube->wait(30);
   } // for
 
   delete food;
@@ -103,16 +107,18 @@ void placeFood()
     foodX = random(0, 8);
     foodY = random(0, 8);
     foodZ = random(0, 8);
-  } while(cube.ledStatus[foodX][foodY][foodZ] != LOW);
+  } while(cube->ledStatus[foodX][foodY][foodZ] != LOW);
   
   food = new Cell(foodX, foodY, foodZ);
 }
 
 boolean checkCrash(Cell *head)
 {
-  return (head->xPos < 0) || (head->xPos > 7)
-         || (head->yPos < 0) || (head->yPos > 7)
-         || (head->zPos < 0) || (head->zPos > 7);
+  byte x = head->xPos, y = head->yPos, z = head->zPos;
+  return (x < 0) || (x > 7)
+            || (y < 0) || (y > 7)
+            || (z < 0) || (z > 7);
+            //|| cube->ledStatus[x][y][z] == HIGH;
 }
 
 void moveTail()
@@ -122,18 +128,12 @@ void moveTail()
 
 void updateCube()
 {
-  cube.clearAll();
+  cube->clearAll();
 
-  Cell *snakeBody = snake;
-  while (snakeBody != NULL)
-  {
-    cube.light(snakeBody->xPos, snakeBody->yPos,
-               snakeBody->zPos);
-    snakeBody = snakeBody->next;
-  }
-  //snake->updateCube(cube);
-
-  cube.light(food->xPos, food->yPos, food->zPos);
+  // recursively update the cube with the snake position
+  snake->updateCube(cube);
+  // update the cube with the food position
+  food->updateCube(cube);
 }
 
 void setInitialState()
