@@ -9,40 +9,46 @@ const byte FORWARD = 87, BACKWARD = 83, LEFT = 65,
            RIGHT = 68, UP = 33, DOWN = 34;
 
 byte snakeDirection;
+boolean gameRunning;
 
 void setup()
 {
-  setInitialPosition();
-  placeFood();
+  Serial.begin(250000);
+  setInitialState();
+  updateCube();
 } // setup
 
 void loop()
 {
-  Serial.begin(9600);
   updateCube();
-  cube.wait(600);
-  moveSnake();
+  if(gameRunning)
+  {
+    cube.wait(1000);
+    moveSnake();
+  }
+  else
+    cube.writeCube();
 } // loop
 
 void moveSnake()
 {
-  Cell *head
+  Cell *newHead
     = new Cell(snake->xPos, snake->yPos, snake->zPos);
 
   switch (snakeDirection)
   {
-    case FORWARD: head->yPos++; break;
-    case BACKWARD: head->yPos--; break;
-    case LEFT: head->xPos--; break;
-    case RIGHT: head->xPos++; break;
-    case UP: head->zPos++; break;
-    case DOWN: head->zPos--; break;
+    case FORWARD: newHead->yPos++; break;
+    case BACKWARD: newHead->yPos--; break;
+    case LEFT: newHead->xPos--; break;
+    case RIGHT: newHead->xPos++; break;
+    case UP: newHead->zPos++; break;
+    case DOWN: newHead->zPos--; break;
   } // switch
 
-  if (!checkCrash(head))
+  if (!checkCrash(newHead))
   {
-    head->next = snake;
-    snake = head;
+    newHead->next = snake;
+    snake = newHead;
 
     if(snake->xPos == food->xPos && snake->yPos == food->yPos
            && snake->zPos == food ->zPos)
@@ -55,9 +61,35 @@ void moveSnake()
   } // if
   else
   {
-    deathAnimation();
+    delete newHead;
+
+    // crash animation
+    for(int i=0; i < 5; i++)
+    {
+      delay(200);
+      cube.wait(400);
+    }
+    endGame();
   }
 } // move
+
+void endGame()
+{
+  // death animation
+  for(int i=0; i < 8; i++)
+  {
+    cube.lightLayer(i);
+    cube.wait(30);
+  } // for
+  for(int i=7; i >= 0; i--)
+  {
+    cube.clearLayer(i);
+    cube.wait(30);
+  } // for
+
+  delete food;
+  setInitialState();
+} // endGame
 
 void placeFood()
 {
@@ -71,15 +103,6 @@ void placeFood()
   
   food = new Cell(foodX, foodY, foodZ);
 }
-
-void deathAnimation()
-{
-  for (int i = 0; i < 5; i++)
-  {
-    delay(200);
-    cube.wait(400);
-  }
-} // deathAnimation
 
 boolean checkCrash(Cell *head)
 {
@@ -104,7 +127,6 @@ void updateCube()
   cube.clearAll();
 
   Cell *snakeBody = snake;
-
   while (snakeBody != NULL)
   {
     cube.light(snakeBody->xPos, snakeBody->yPos,
@@ -115,20 +137,42 @@ void updateCube()
   cube.light(food->xPos, food->yPos, food->zPos);
 }
 
-void setInitialPosition()
+void setInitialState()
 {
+  gameRunning = false;
   snakeDirection = FORWARD;
+  
   snake = new Cell(0, 3, 0);
-
-  Cell *body = snake;
+  Cell *snakeBody = snake;
   for (int i = 2; i >= 0; i--)
   {
-    body->next = new Cell(0, i, 0);
-    body = body->next;
+    snakeBody->next = new Cell(0, i, 0);
+    snakeBody = snakeBody->next;
   }
-} // setInitialPosition
+
+  placeFood();
+} // setInitialState
 
 void serialEvent()
 {
-  snakeDirection = (byte)Serial.read();
+  byte input = (byte)Serial.read();
+  // 80 = 'p'
+  if(input == 80)
+    gameRunning = !gameRunning;
+  else if(input != oppositeDirection(snakeDirection))
+    snakeDirection = input;
 } // serialEvent
+
+byte oppositeDirection(byte givenDirection)
+{
+  switch(givenDirection)
+  {
+    case FORWARD: return BACKWARD;
+    case BACKWARD: return FORWARD;
+    case LEFT: return RIGHT;
+    case RIGHT: return LEFT;
+    case UP: return DOWN;
+    case DOWN: return UP;
+  } // switch
+} // oppositeDirection
+

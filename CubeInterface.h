@@ -9,8 +9,10 @@ class CubeInterface
     CubeInterface(byte requiredDelay);
     ~CubeInterface();
     void light(byte x, byte y, byte z);
+    void lightLayer(byte layer);
     void off(byte x, byte y, byte z);
     void clearAll();
+    void clearLayer(byte layer);
     void clearColumn(byte x, byte y);
     void writeCube();
     void wait(byte t);

@@ -9,7 +9,7 @@ void setup()
   // open a connection to the arduino (serial port at index 1)
   try
   {
-    arduinoPort = new Serial(this, Serial.list()[1], 9600);
+    arduinoPort = new Serial(this, Serial.list()[1], 250000);
     arduinoPort.bufferUntil('\n');
   }
   catch(ArrayIndexOutOfBoundsException e)
@@ -18,6 +18,7 @@ void setup()
     { println("Failed to open serial port"); }
     
   acceptedKeys = new HashSet<Integer>();
+  acceptedKeys.add(80); // P
   acceptedKeys.add(87); // W
   acceptedKeys.add(83); // S
   acceptedKeys.add(65); // A
@@ -34,6 +35,9 @@ void draw()
 void keyPressed()
 {
   if(acceptedKeys.contains(keyCode))
+  {
     arduinoPort.write(keyCode);
-  println("pressed " + int(key) + " " + keyCode);
+    println("key accepted: " + keyCode);
+  } // if
+  //println("pressed " + int(key) + " " + keyCode);
 } // keyPressed
