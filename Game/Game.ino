@@ -8,7 +8,8 @@ Cell *food;
 // object to control led cube
 CubeInterface *cube;
 
-int snakeSpeed = 30;
+int snakeSpeed = 15;
+byte maxSpeed = 18;
 byte maxLength = 8;
 
 // these values set by setInitialState()
@@ -17,7 +18,7 @@ byte snakeLength;
 byte snakeDirection;
 
 boolean gameRunning;
-boolean aiMode = true;
+boolean aiMode = false;
 
 void setup()
 {
@@ -76,6 +77,9 @@ void moveSnake()
         snakeLength++;
       else
         moveTail();
+
+      if(snakeSpeed < maxSpeed)
+        snakeSpeed++;
     } // if
     else
       moveTail();
@@ -166,6 +170,7 @@ void updateCube()
 // place snake and food in initial positions
 void setInitialState()
 {
+  snakeSpeed = 5;
   gameRunning = false;
   noOfLives = 1;
   snakeLength = 4;
@@ -184,7 +189,7 @@ void setInitialState()
 
 void serialEvent()
 {
-  byte input = (byte)Serial.read();
+  byte input = Serial.read();
   // 80 = 'p'
   if(input == 80)
     gameRunning = !gameRunning;
