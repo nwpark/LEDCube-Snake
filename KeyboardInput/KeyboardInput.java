@@ -48,7 +48,6 @@ public class KeyboardInput extends JFrame
   public KeyboardInput()
   {
     try {
-      //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
       UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
     } catch(Exception e) { System.out.println(e); }
 

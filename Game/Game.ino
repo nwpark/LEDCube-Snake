@@ -8,8 +8,8 @@ Cell *food;
 // object to control led cube
 CubeInterface *cube;
 
-int snakeSpeed = 15;
-byte maxSpeed = 18;
+int snakeSpeed = 5;
+byte maxSpeed = 30;
 byte maxLength = 8;
 
 // these values set by setInitialState()
@@ -18,7 +18,7 @@ byte snakeLength;
 byte snakeDirection;
 
 boolean gameRunning;
-boolean aiMode = false;
+boolean aiMode = true;
 
 void setup()
 {
@@ -49,6 +49,13 @@ void loop()
   }
   else
     cube->writeCube();
+
+//  cube->clearAll();
+//  for(int i=0; i<8; i++)
+//  {
+//    cube->light(0,i,0);
+//    cube->wait(100);
+//  }
 } // loop
 
 // move snake forward by one cell
@@ -170,7 +177,7 @@ void updateCube()
 // place snake and food in initial positions
 void setInitialState()
 {
-  snakeSpeed = 5;
+  snakeSpeed = 30;
   gameRunning = false;
   noOfLives = 1;
   snakeLength = 4;
